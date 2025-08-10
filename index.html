@@ -3,85 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CHINCHINA INGENIERÍA & CONSTRUCCIÓN</title>
+  <title>CHINCHINA Ingeniería & Construcción</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f8;
+      background: #f4f6f8;
       color: #333;
     }
     header {
-      background-color: #0a3d62;
+      background: #0a3d62;
       color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header img {
-      height: 50px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    .admin-button {
-      background-color: #f39c12;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .welcome {
+      padding: 1rem;
       text-align: center;
+    }
+    #logoDisplay {
+      max-height: 80px;
+      margin: 1rem auto;
+      display: block;
+    }
+    .section {
       padding: 2rem;
-      background-color: #dff9fb;
+      max-width: 900px;
+      margin: auto;
     }
     .gallery {
-      padding: 2rem;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
     }
-    .card {
-      background-color: white;
-      border-radius: 8px;
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 1rem;
-      text-align: center;
     }
-    .card img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 5px;
-      background-color: #ecf0f1;
+    .admin-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #f39c12;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .admin-panel {
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
       padding: 2rem;
-      background-color: #ffffff;
-      border-top: 2px solid #ccc;
-    }
-    .admin-panel h2 {
-      margin-top: 0;
-      color: #0a3d62;
-    }
-    .admin-panel label {
-      display: block;
-      margin: 1rem 0 0.5rem;
-    }
-    .admin-panel input, .admin-panel textarea {
+      border-radius: 15px;
       width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      max-width: 500px;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+    .preview {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .preview img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
     }
     footer {
       text-align: center;
       padding: 1rem;
-      background-color: #0a3d62;
+      background: #0a3d62;
       color: white;
     }
   </style>
@@ -89,49 +99,118 @@
 <body>
 
   <header>
-    <img src="logo.png" alt="Logo CHINCHINA" onerror="this.src='https://via.placeholder.com/150x50?text=LOGO'">
-    <h1>CHINCHINA INGENIERÍA & CONSTRUCCIÓN</h1>
-    <button class="admin-button" onclick="document.getElementById('admin').scrollIntoView()">⚙️ Administración</button>
+    <img id="logoDisplay" src="" alt="Logo CHINCHINA" style="display:none;" />
+    <h1>CHINCHINA Ingeniería & Construcción</h1>
   </header>
 
-  <section class="welcome">
-    <h2>Bienvenido a nuestro sitio</h2>
-    <p>Explora nuestros proyectos y conoce más sobre lo que hacemos.</p>
-  </section>
-
-  <section class="gallery">
-    <div class="card">
-      <img src="https://via.placeholder.com/300x150?text=Proyecto+1" alt="Proyecto 1">
-      <p>Proyecto destacado</p>
-    </div>
-    <div class="card">
-      <img src="https://via.placeholder.com/300x150?text=Proyecto+2" alt="Proyecto 2">
-      <p>Próximamente</p>
-    </div>
-    <div class="card">
-      <img src="https://via.placeholder.com/300x150?text=Proyecto+3" alt="Proyecto 3">
-      <p>En desarrollo</p>
+  <section class="section">
+    <h2>Galería de Proyectos</h2>
+    <div class="gallery" id="projectGallery">
+      <p style="text-align:center; color:#888;">No hay imágenes cargadas aún.</p>
     </div>
   </section>
 
-  <section class="admin-panel" id="admin">
-    <h2>Panel de Administración</h2>
-    <label for="logo">Subir Logo:</label>
-    <input type="file" id="logo" name="logo">
+  <button class="admin-btn" onclick="openModal()">⚙️</button>
 
-    <label for="project-title">Título del Proyecto:</label>
-    <input type="text" id="project-title" name="project-title" placeholder="Ej. Mejoramiento de vía rural">
+  <div class="modal" id="adminModal">
+    <div class="modal-content" id="loginPanel">
+      <h2>🔐 Acceso Administrativo</h2>
+      <input type="text" id="user" placeholder="Usuario" />
+      <input type="password" id="pass" placeholder="Contraseña" />
+      <button onclick="login()">Ingresar</button>
+    </div>
 
-    <label for="project-desc">Descripción:</label>
-    <textarea id="project-desc" name="project-desc" rows="4" placeholder="Detalles técnicos, ubicación, avance..."></textarea>
+    <div class="modal-content" id="adminPanel" style="display:none;">
+      <h2>🛠️ Panel de Administración</h2>
+      <label>Subir Logo:</label>
+      <input type="file" accept="image/*" onchange="uploadLogo(event)" />
+      <div class="preview" id="logoPreview"></div>
 
-    <label for="project-img">Imagen del Proyecto:</label>
-    <input type="file" id="project-img" name="project-img">
-  </section>
+      <label>Subir Fotos de Proyectos:</label>
+      <input type="file" accept="image/*" multiple onchange="uploadProjects(event)" />
+      <div class="preview" id="projectPreview"></div>
+
+      <button onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
 
   <footer>
     &copy; 2025 CHINCHINA INGENIERÍA & CONSTRUCCIÓN E.I.R.L.
   </footer>
+
+  <script>
+    const modal = document.getElementById('adminModal');
+    const loginPanel = document.getElementById('loginPanel');
+    const adminPanel = document.getElementById('adminPanel');
+
+    function openModal() {
+      modal.classList.add('active');
+    }
+
+    function login() {
+      const u = document.getElementById('user').value;
+      const p = document.getElementById('pass').value;
+      if (u === 'admin' && p === 'chinchina2025') {
+        loginPanel.style.display = 'none';
+        adminPanel.style.display = 'block';
+      } else {
+        alert('Credenciales incorrectas');
+      }
+    }
+
+    function logout() {
+      loginPanel.style.display = 'block';
+      adminPanel.style.display = 'none';
+      modal.classList.remove('active');
+    }
+
+    function uploadLogo(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem('logo', reader.result);
+        document.getElementById('logoDisplay').src = reader.result;
+        document.getElementById('logoDisplay').style.display = 'block';
+        document.getElementById('logoPreview').innerHTML = `<img src="${reader.result}" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function uploadProjects(e) {
+      const files = Array.from(e.target.files);
+      const preview = document.getElementById('projectPreview');
+      const gallery = document.getElementById('projectGallery');
+      preview.innerHTML = '';
+      gallery.innerHTML = '';
+      const images = [];
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          images.push(reader.result);
+          preview.innerHTML += `<img src="${reader.result}" />`;
+          gallery.innerHTML += `<img src="${reader.result}" />`;
+          localStorage.setItem('projects', JSON.stringify(images));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.onload = () => {
+      const logo = localStorage.getItem('logo');
+      if (logo) {
+        document.getElementById('logoDisplay').src = logo;
+        document.getElementById('logoDisplay').style.display = 'block';
+      }
+
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      const gallery = document.getElementById('projectGallery');
+      gallery.innerHTML = '';
+      projects.forEach(img => {
+        gallery.innerHTML += `<img src="${img}" />`;
+      });
+    };
+  </script>
 
 </body>
 </html>
